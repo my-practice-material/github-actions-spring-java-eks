@@ -24,7 +24,7 @@ jobs:
         cache: maven
 
     - name: Build Application
-      run:  mvn clean install
+      run:  mvn -B package --file pom.xml
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarqube-scan-action@v8
