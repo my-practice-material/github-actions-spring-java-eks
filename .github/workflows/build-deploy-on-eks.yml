@@ -23,13 +23,13 @@ jobs:
         java-version: '17'
         cache: maven
 
+    - name: Build Application
+      run:  mvn clean install
+
     - name: SonarCloud Scan
       uses: SonarSource/sonarqube-scan-action@v8
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-    - name: Build Application
-      run:  mvn clean install
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
