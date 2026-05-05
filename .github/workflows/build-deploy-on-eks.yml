@@ -26,7 +26,8 @@ jobs:
         cache: maven
 
     - name: Build and analyze with Maven
-      run: mvn verify sonar:sonar \
+      run: | 
+          mvn verify sonar:sonar \
           -Dsonar.projectKey=my-practice-material_github-actions-spring-java-eks \
           -Dsonar.organization=my-practice-material \
           -Dsonar.host.url=https://sonarcloud.io \
