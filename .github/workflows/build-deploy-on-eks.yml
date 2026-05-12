@@ -1,14 +1,38 @@
-name: Compile Java Application
-on: 
-- workflow_dispatch
-- push
+# Workflow to build a Spring Java Maven application, perform SonarQube analysis, and deploy to EKS
+name: Build and Deploy on EKS
+run-name: Build and Deploy on EKS - ${{ github.run_id }}
+
+# Permissions for the workflow. Adjust as needed.
 permissions:
+  actions: read
+  contents: write
   id-token: write
-  contents: read
+  pull-requests: read
+  security-events: write
+
+# Triggers for the workflow
+on: 
+  push:
+    branches:
+      - main
+      - development
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select the environment to deploy'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+
+# Environment variables
 env:
   EKS_CLUSTER_NAME: 'demo-eks-cluster'
   IMAGE_TAG: ${{ github.run_id }}
 
+# Define the jobs for the workflow
 jobs:
   Build-Application:
     runs-on: ubuntu-latest
@@ -25,13 +49,13 @@ jobs:
         java-version: '17'
         cache: maven
 
-    - name: Build and analyze with Maven
+    - name: Build and Sonar Scan
       run: | 
-          mvn verify sonar:sonar \
-          -Dsonar.projectKey=my-practice-material_github-actions-spring-java-eks \
-          -Dsonar.organization=my-practice-material \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+        mvn verify sonar:sonar \
+        -Dsonar.projectKey=my-practice-material_github-actions-spring-java-eks \
+        -Dsonar.organization=my-practice-material \
+        -Dsonar.host.url=https://sonarcloud.io \
+        -Dsonar.token=${{ secrets.SONAR_TOKEN }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
